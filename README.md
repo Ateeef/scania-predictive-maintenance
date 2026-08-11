@@ -59,7 +59,7 @@ Auf Basis der EDA wurde eine vollständige sklearn-Pipeline aufgebaut, die alle 
 - Median-Imputation fehlender Werte
 - Standardisierung
 
-Die Pipeline stellt sicher, dass neue Daten genauso vorverarbeitet werden wie die Trainingsdaten — ohne manuelle Eingriffe.
+- Pipeline für automatische Bereinigung der Daten.
 
 ---
 
