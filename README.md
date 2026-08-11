@@ -11,8 +11,6 @@ Das Air Pressure System (APS) erzeugt Druckluft für Bremsen und Getriebe schwer
 
 Die Frage: Lässt sich ein APS-Defekt anhand von Sensordaten vorhersagen, bevor er passiert?
 
-Der Haken dabei: Nicht jeder Fehler wiegt gleich schwer.
-
 - Ein Fehlalarm (intakter LKW wird zur Werkstatt geschickt): **10 €**
 - Ein übersehener Defekt (defekter LKW fährt weiter): **500 €**
 
@@ -28,7 +26,7 @@ Der Datensatz umfasst 60.000 Betriebsdatensätze mit 170 Sensoren. Erster Blick 
 
 Nur 1,7 % der Datensätze zeigen einen echten Defekt. Das Modell lernt auf 98,3 % intakten LKWs — und soll trotzdem zuverlässig die 1,7 % finden. Klassisches Ungleichgewichtsproblem.
 
-Dazu kommt eine zweite Herausforderung: Alle 170 Sensoren sind **anonymisiert**. Kein Sensor trägt einen Namen, der auf seine physikalische Bedeutung hinweist — nur Codes wie `aa_000`, `ci_000`, `bx_000`. Die Analyse musste rein datenbasiert laufen.
+ Zweite Herausforderung: Alle 170 Sensoren sind **anonymisiert**. Kein Sensor trägt einen Namen, der auf seine physikalische Bedeutung hinweist
 
 ---
 
