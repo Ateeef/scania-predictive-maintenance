@@ -47,6 +47,18 @@ Entfernt wurden:
 
 Trotz Anonymisierung zeigen bestimmte Sensoren bei defektem APS klare Auffälligkeiten. Die stärksten Signale trennen defekte von intakten LKWs sauber — ohne dass ich weiß, was der Sensor physikalisch misst.
 
+![Pairplot](images/pairplot.png)
+
+Im Pairplot sieht man deutlich: Defekte LKWs (rot) und intakte (grün) bilden in bestimmten Sensorpaaren klar trennbare Cluster. Das war die Grundlage für die Merkmalsauswahl.
+
+![Scatterplot](images/scatterplot.png)
+
+Einzelne Sensoren wie `aa_000` und `bx_000` zeigen eine ausgeprägte Trennung zwischen den Klassen — trotz fehlender physikalischer Beschriftung.
+
+![Boxplot](images/boxplot.png)
+
+Der Boxplot macht es noch klarer: Bei defekten LKWs liegen die Messwerte systematisch in anderen Bereichen. Kein Zufall — das Modell hat echte Signale gefunden.
+
 ### Schritt 3 — Modell entwickeln und vergleichen
 
 Ich habe zwei Modelle gebaut und direkt verglichen:
