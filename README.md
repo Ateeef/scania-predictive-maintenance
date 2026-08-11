@@ -5,11 +5,18 @@ TH Deggendorf · Bearbeitungszeit: 1 Monat
 
 ---
 
-## Aufgabenstellung
+## Das Problem
 
 Das Air Pressure System (APS) erzeugt Druckluft für Bremsen und Getriebe schwerer Scania-LKWs. Fällt es aus, steht der LKW — mitten auf der Autobahn.
 
 Die Frage: Lässt sich ein APS-Defekt anhand von Sensordaten vorhersagen, bevor er passiert?
+
+Der Haken dabei: Nicht jeder Fehler wiegt gleich schwer.
+
+- Ein Fehlalarm (intakter LKW wird zur Werkstatt geschickt): **10 €**
+- Ein übersehener Defekt (defekter LKW fährt weiter): **500 €**
+
+Das bedeutet: klassische Accuracy ist hier die falsche Metrik. Ein Modell das 98 % Accuracy hat aber jeden zweiten Defekt übersieht, ist im echten Betrieb wertlos. Gesucht wird **Recall**.
 
 ---
 
@@ -21,13 +28,11 @@ Der Datensatz umfasst 60.000 Betriebsdatensätze mit 170 Sensoren. Erster Blick 
 
 Nur 1,7 % der Datensätze zeigen einen echten Defekt. Das Modell lernt auf 98,3 % intakten LKWs — und soll trotzdem zuverlässig die 1,7 % finden. Klassisches Ungleichgewichtsproblem.
 
- Zweite Herausforderung: Alle 170 Sensoren sind **anonymisiert**. Kein Sensor trägt einen Namen, der auf seine physikalische Bedeutung hinweist
+Dazu kommt eine zweite Herausforderung: Alle 170 Sensoren sind **anonymisiert**. Kein Sensor trägt einen Namen, der auf seine physikalische Bedeutung hinweist — nur Codes wie `aa_000`, `ci_000`, `bx_000`. Die Analyse musste rein datenbasiert laufen.
 
 ---
 
 ## 2. Explorative Datenanalyse
-
-Bevor überhaupt ein Muster gesucht werden konnte, musste der Datensatz bereinigt werden:
 
 ![Fehlende Werte](images/fehlende_werte.png)
 
@@ -40,12 +45,6 @@ Viele Sensoren lieferten kaum verwertbare Daten. Nach systematischer Prüfung wu
 
 Übrig blieben **100 Sensoren** — die Grundlage für die weitere Analyse.
 
----
-
-## 3. Datenvorverarbeitung
-
-Nach der Bereinigung wurde geprüft, ob die verbleibenden Sensoren eine Trennung zwischen defekten und intakten LKWs zeigen.
-
 ![Pairplot](images/pairplot.png)
 
 Physikalische Messgrößen stehen häufig im Zusammenhang und korrelieren miteinander. Aufgrund der Anonymisierung lässt sich nicht erkennen, ob bestimmte Messgrößen mehrfach erfasst wurden. Der Pairplot zeigt deutliche Korrelationen zwischen den Sensoren — redundante Merkmale wurden daher entfernt.
@@ -57,6 +56,19 @@ Physikalische Messgrößen stehen häufig im Zusammenhang und korrelieren mitein
 ![Boxplot](images/boxplot.png)
 
 Die selektierten und bereinigten Sensoren zeigen eine klare Trennung zwischen defekten und intakten APS. Defekte LKWs (pos.) liegen fast immer im oberen Bereich — das Muster wiederholt sich bei jedem der sechs Schlüsselsensoren.
+
+---
+
+## 3. Datenvorverarbeitung
+
+Auf Basis der EDA wurde eine vollständige sklearn-Pipeline aufgebaut, die alle Bereinigungsschritte automatisch ausführt:
+
+- Entfernung von Spalten mit fehlenden Werten, Konstanten und redundanten Merkmalen
+- Ausreißerbehandlung (IQR)
+- Median-Imputation fehlender Werte
+- Standardisierung
+
+Die Pipeline stellt sicher, dass neue Daten genauso vorverarbeitet werden wie die Trainingsdaten — ohne manuelle Eingriffe.
 
 ---
 
