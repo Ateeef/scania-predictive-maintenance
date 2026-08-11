@@ -5,96 +5,81 @@ TH Deggendorf · Bearbeitungszeit: 1 Monat
 
 ---
 
-## Was steckt hinter diesem Projekt?
+## Projektbeschreibung
 
-Das Air Pressure System (APS) ist ein sicherheitskritisches System in schweren Scania-LKWs — es erzeugt Druckluft für Bremsen und Getriebe. Fällt es aus, steht der LKW.
+Das Air Pressure System (APS) erzeugt Druckluft für Bremsen und Getriebe schwerer Scania-LKWs. Ein Ausfall führt direkt zum Stillstand des Fahrzeugs.
 
-Die Aufgabe war klar: Kann man anhand von Sensordaten vorhersagen, ob ein LKW ein APS-Problem hat — **bevor** es zum Ausfall kommt?
+Ziel: Binäre Klassifikation auf Basis anonymisierter Sensordaten — APS-Defekt (pos) oder kein Defekt (neg) — mit Fokus auf kostenoptimale Fehlererkennung.
 
-Ich habe 60.000 echte Betriebsdatensätze analysiert, ein Machine-Learning-Modell entwickelt und am Ende **91 % der defekten LKWs erkannt**.
+**Datensatz:** 60.000 Betriebsdatensätze · 170 anonymisierte Sensoren · IDA Industrial Challenge 2016
 
 ---
 
-## Die Herausforderung: Nadel im Heuhaufen
-
-Das erste was ich beim Öffnen der Daten gesehen habe — ein extremes Ungleichgewicht:
+## Klassenverteilung
 
 ![Klassenverteilung](images/klassenverteilung.png)
 
-Von 60.000 LKWs sind nur **1.000 wirklich defekt** (1,7 %). Das Modell muss genau diese 1,7 % finden, ohne bei den anderen ständig Fehlalarm zu schlagen.
-
-Dazu kam eine weitere Herausforderung: Alle 170 Sensoren sind **anonymisiert**. Keine Bezeichnungen, keine physikalische Bedeutung — nur Codes wie `aa_000`, `bb_000` usw. Die komplette Analyse musste rein datenbasiert laufen.
+Starkes Klassenungleichgewicht: Nur 1,7 % der Datensätze sind positiv (defekt). Fehlklassifikationen haben dabei sehr unterschiedliche Kosten — ein übersehener Defekt (Cost_2 = 500 €) ist 50× teurer als ein Fehlalarm (Cost_1 = 10 €). Die Metrik der Wahl ist deshalb **Recall**, nicht Accuracy.
 
 ---
 
-## Was ich gemacht habe
-
-### Schritt 1 — Daten verstehen und bereinigen
-
-170 Sensorsignale, viele davon unbrauchbar:
+## Datenaufbereitung
 
 ![Fehlende Werte](images/fehlende_werte.png)
 
-Manche Sensoren hatten über 80 % fehlende Werte. Andere lieferten konstante Werte oder doppelte Informationen. Nach der Bereinigung blieben **100 relevante Sensoren** übrig.
+170 Sensoren, viele davon nicht verwendbar. Nach systematischer Bereinigung:
 
-Entfernt wurden:
-- 28 Sensoren mit mehr als 10 % fehlenden Werten
-- 35 stark korrelierte (redundante) Sensoren
-- 6 nahezu konstante Sensoren
-- 1 vollständig konstanter Sensor
+- 28 Sensoren mit > 10 % fehlenden Werten entfernt
+- 35 stark korrelierte (redundante) Sensoren entfernt
+- 6 nahezu konstante Sensoren entfernt
+- 1 vollständig konstanter Sensor entfernt
 
-### Schritt 2 — Muster erkennen
+Ergebnis: **100 relevante Features** für das Modell.
 
-Trotz Anonymisierung zeigen bestimmte Sensoren bei defektem APS klare Auffälligkeiten. Die stärksten Signale trennen defekte von intakten LKWs sauber — ohne dass ich weiß, was der Sensor physikalisch misst.
+---
+
+## Explorative Datenanalyse
 
 ![Pairplot](images/pairplot.png)
 
-Im Pairplot sieht man deutlich: Defekte LKWs (rot) und intakte (grün) bilden in bestimmten Sensorpaaren klar trennbare Cluster. Das war die Grundlage für die Merkmalsauswahl.
+Trotz Anonymisierung zeigen mehrere Sensoren klare Trennbarkeit zwischen den Klassen.
 
 ![Scatterplot](images/scatterplot.png)
 
-Einzelne Sensoren wie `aa_000` und `bx_000` zeigen eine ausgeprägte Trennung zwischen den Klassen — trotz fehlender physikalischer Beschriftung.
+Sensoren wie `aa_000` und `bx_000` zeigen strukturierte Unterschiede zwischen defekten und intakten Fahrzeugen.
 
 ![Boxplot](images/boxplot.png)
 
-Der Boxplot macht es noch klarer: Bei defekten LKWs liegen die Messwerte systematisch in anderen Bereichen. Kein Zufall — das Modell hat echte Signale gefunden.
+Defekte LKWs weisen in mehreren Sensoren systematisch andere Werteverteilungen auf — Basis für die Merkmalsauswahl.
 
-### Schritt 3 — Modell entwickeln und vergleichen
+---
 
-Ich habe zwei Modelle gebaut und direkt verglichen:
+## Modellvergleich
 
 ![Modellvergleich](images/modellvergleich.png)
 
-| Modell | Recall (Defekte erkannt) | Accuracy |
+| Modell | Recall | Accuracy |
 |---|---|---|
 | Random Forest | 58 % | 99 % |
 | **Gaussian Naive Bayes** | **91 %** | **87 %** |
 
-Der Random Forest hatte zwar eine höhere Accuracy — aber er hat mehr als die Hälfte der defekten LKWs **übersehen**. Das ist in diesem Kontext gefährlich und teuer.
-
-Naive Bayes hat 91 % der Defekte gefunden. Das war die Entscheidung.
+Der Random Forest optimiert auf Accuracy und übersieht dabei mehr als 40 % der Defekte. Gaussian Naive Bayes priorisiert Recall — die entscheidende Metrik für diesen Anwendungsfall.
 
 ---
 
-## Das Ergebnis
+## Ergebnis
 
-![Finale Confusion Matrix](images/confusion_matrix_final.png)
+![Confusion Matrix](images/confusion_matrix_final.png)
 
-Auf **12.000 unbekannten Testdaten**:
+Testdaten: 12.000 Datensätze (ungesehen)
 
-- **181 von 200** defekten LKWs korrekt erkannt
-- 19 Defekte übersehen — das sind die teuren Fälle (je ~500 €)
-- 1.491 Fehlalarme — ärgerlich, aber handhabbar (je ~10 €)
+| | Vorhergesagt: neg | Vorhergesagt: pos |
+|---|---|---|
+| **Tatsächlich: neg** | 10.309 | 1.491 |
+| **Tatsächlich: pos** | 19 | 181 |
 
-Ein übersehener Defekt kostet **50× mehr** als ein Fehlalarm. Das Modell ist auf diesen Trade-off ausgelegt.
-
----
-
-## Warum das für Ingenieure relevant ist
-
-> Geplante Wartung statt Panneneinsatz auf der Autobahn.
-
-Predictive Maintenance bedeutet: Der LKW kommt in die Werkstatt, weil ein Algorithmus es sagt — nicht weil er liegengeblieben ist. Das spart Kosten, Zeit und im schlimmsten Fall Menschenleben.
+**Recall: 91 %** — 181 von 200 Defekten erkannt.  
+Geschätzte Kosteneinsparung gegenüber Random Forest: erheblich, da 76 zusätzliche Defekte korrekt identifiziert werden.
 
 ---
 
@@ -127,9 +112,9 @@ import joblib
 pipeline = joblib.load("scania_aps_pipeline.pkl")
 model    = joblib.load("scania_aps_model_gnb.pkl")
 
-X_prepared   = pipeline.transform(X_new)
-predictions  = model.predict(X_prepared)
-# 0 = APS in Ordnung  |  1 = APS defekt
+X_prepared  = pipeline.transform(X_new)
+predictions = model.predict(X_prepared)
+# 0 = neg (kein Defekt)  |  1 = pos (APS defekt)
 ```
 
 ---
@@ -137,7 +122,8 @@ predictions  = model.predict(X_prepared)
 ## Datensatz
 
 APS Failure at Scania Trucks — Scania CV AB / UCI Machine Learning Repository (2016)  
-IDA Industrial Challenge 2016
+IDA Industrial Challenge 2016  
+[UCI Repository](https://archive.ics.uci.edu/dataset/421/aps+failure+at+scania+trucks)
 
 ---
 
