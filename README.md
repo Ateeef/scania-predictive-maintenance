@@ -5,7 +5,7 @@ TH Deggendorf · Bearbeitungszeit: 1 Monat
 
 ---
 
-## Das Problem
+## Aufgabenstellung:
 
 Das Air Pressure System (APS) erzeugt Druckluft für Bremsen und Getriebe schwerer Scania-LKWs. Fällt es aus, steht der LKW — mitten auf der Autobahn.
 
