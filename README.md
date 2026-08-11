@@ -11,7 +11,7 @@ Das Air Pressure System (APS) erzeugt Druckluft für Bremsen und Getriebe schwer
 
 Die Frage: Lässt sich ein APS-Defekt anhand von Sensordaten vorhersagen, bevor er passiert?
 
-Dabei gibt es eine entscheidende Einschränkung: Nicht jeder Fehler wiegt gleich schwer.
+Der Haken dabei: Nicht jeder Fehler wiegt gleich schwer.
 
 - Ein Fehlalarm (intakter LKW wird zur Werkstatt geschickt): **10 €**
 - Ein übersehener Defekt (defekter LKW fährt weiter): **500 €**
@@ -20,7 +20,7 @@ Das bedeutet: klassische Accuracy ist hier die falsche Metrik. Ein Modell das 98
 
 ---
 
-## Die Daten — und warum sie schwierig sind
+## 1. Erster Überblick und Datenstruktur
 
 Der Datensatz umfasst 60.000 Betriebsdatensätze mit 170 Sensoren. Erster Blick auf die Zielklasse:
 
@@ -32,7 +32,7 @@ Dazu kommt eine zweite Herausforderung: Alle 170 Sensoren sind **anonymisiert**.
 
 ---
 
-## Datenbereinigung — von 170 auf 100 Sensoren
+## 2. Explorative Datenanalyse
 
 Bevor überhaupt ein Muster gesucht werden konnte, musste der Datensatz bereinigt werden:
 
@@ -49,27 +49,25 @@ Viele Sensoren lieferten kaum verwertbare Daten. Nach systematischer Prüfung wu
 
 ---
 
-## Mustererkennung — gibt es überhaupt trennbare Signale?
+## 3. Datenvorverarbeitung
 
-Erst nach der Bereinigung konnte die eigentliche Frage gestellt werden: Zeigen defekte LKWs in den Daten ein anderes Muster als intakte?
+Nach der Bereinigung wurde geprüft, ob die verbleibenden Sensoren eine Trennung zwischen defekten und intakten LKWs zeigen.
 
 ![Pairplot](images/pairplot.png)
 
-Ja — trotz Anonymisierung. Im Pairplot der fünf stärksten Sensoren (u.a. `ci_000`, `bb_000`, `bv_000`) bilden defekte LKWs (rot) und intakte (grün) in mehreren Sensorpaaren klar trennbare Cluster.
-
-Das war der entscheidende Befund: Die Signale sind vorhanden, sie müssen nur richtig ausgewertet werden.
+Physikalische Messgrößen stehen häufig im Zusammenhang und korrelieren miteinander. Aufgrund der Anonymisierung lässt sich nicht erkennen, ob bestimmte Messgrößen mehrfach erfasst wurden. Der Pairplot zeigt deutliche Korrelationen zwischen den Sensoren — redundante Merkmale wurden daher entfernt.
 
 ![Scatterplot](images/scatterplot.png)
 
-Besonders `aa_000` und `bx_000` zeigen eine ausgeprägte Trennung — defekte LKWs liegen systematisch in anderen Wertebereichen als intakte.
+`aa_000` gegen `bx_000` auf Log-Skala: Defekte LKWs (pos.) bilden eine Wolke im oberen Bereich — beide Sensoren zeigen gleichzeitig hohe Werte. Intakte LKWs verteilen sich über die gesamte Fläche.
 
 ![Boxplot](images/boxplot.png)
 
-Der Boxplot bestätigt es: Die Werteverteilungen unterscheiden sich strukturell. Kein Zufall — das Modell hat echte physikalische Signale gefunden, auch ohne zu wissen was die Sensoren messen.
+Die selektierten und bereinigten Sensoren zeigen eine klare Trennung zwischen defekten und intakten APS. Defekte LKWs (pos.) liegen fast immer im oberen Bereich — das Muster wiederholt sich bei jedem der sechs Schlüsselsensoren.
 
 ---
 
-## Modellauswahl — Accuracy ist nicht alles
+## 4. Modellierung und Auswahl
 
 Zwei Modelle wurden trainiert und direkt verglichen:
 
@@ -80,17 +78,17 @@ Zwei Modelle wurden trainiert und direkt verglichen:
 | Random Forest | 58 % | 99 % |
 | **Gaussian Naive Bayes** | **91 %** | **87 %** |
 
-Der Random Forest sieht auf den ersten Blick besser aus — 99 % Accuracy. Aber er übersieht mehr als 40 % aller Defekte. Bei 500 € pro übersehenen Fall ist das im echten Betrieb nicht akzeptabel.
+Random Forest: Intakte LKWs zu 99 % erkannt — defekte LKWs nur zu 47 %. Das Modell übersieht mehr als die Hälfte aller Defekte.
 
-Gaussian Naive Bayes wurde auf **Recall** optimiert und findet 91 % der Defekte. Dafür nimmt es mehr Fehlalarme in Kauf — die aber nur 10 € kosten. Das war die richtige Abwägung.
+Naive Bayes: Intakte LKWs zu 87,5 % erkannt — defekte LKWs zu 91 %. Naive Bayes findet fast alle defekten LKWs und schneidet beim Recall deutlich besser ab.
 
 ---
 
-## Ergebnis
+## 5. Evaluation des finalen Modells
 
 ![Confusion Matrix](images/confusion_matrix_final.png)
 
-Getestet auf 12.000 ungesehenen Datensätzen:
+91 % der defekten LKWs wurden im Testdatensatz gefunden. Von 200 defekten LKWs wurden 181 erkannt — nur 19 durchgegangen.
 
 | | Vorhergesagt: neg | Vorhergesagt: pos |
 |---|---|---|
