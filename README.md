@@ -3,11 +3,22 @@
 **Prüfungsarbeit im Rahmen des Hochschulzertifikats »Maschinelles Lernen«**  
 TH Deggendorf · Bearbeitungszeit: 1 Monat
 
+*Die Projektarbeit wurde entsprechend der Kursanforderungen konzipiert und rein datenbasiert durchgeführt — ohne Domänenwissen über die einzelnen Sensoren, da alle 170 Attribute anonymisiert sind.*
+
 ---
 
-## Aufgabenstellung:
+## Das Problem
 
 Das Air Pressure System (APS) erzeugt Druckluft für Bremsen und Getriebe schwerer Scania-LKWs. Fällt es aus, steht der LKW — mitten auf der Autobahn.
+
+Die Frage: Lässt sich ein APS-Defekt anhand von Sensordaten vorhersagen, bevor er passiert?
+
+Der Haken dabei: Nicht jeder Fehler wiegt gleich schwer.
+
+- Ein Fehlalarm (intakter LKW wird zur Werkstatt geschickt): **10 €**
+- Ein übersehener Defekt (defekter LKW fährt weiter): **500 €**
+
+Das bedeutet: klassische Accuracy ist hier die falsche Metrik. Ein Modell das 98 % Accuracy hat aber jeden zweiten Defekt übersieht, ist im echten Betrieb wertlos. Gesucht wird **Recall**.
 
 ---
 
@@ -19,7 +30,7 @@ Der Datensatz umfasst 60.000 Betriebsdatensätze mit 170 Sensoren. Erster Blick 
 
 Nur 1,7 % der Datensätze zeigen einen echten Defekt. Das Modell lernt auf 98,3 % intakten LKWs — und soll trotzdem zuverlässig die 1,7 % finden. Klassisches Ungleichgewichtsproblem.
 
- Zweite Herausforderung: Alle 170 Sensoren sind **anonymisiert**. Kein Sensor trägt einen Namen, der auf seine physikalische Bedeutung hinweist 
+Dazu kommt eine zweite Herausforderung: Alle 170 Sensoren sind **anonymisiert**. Kein Sensor trägt einen Namen, der auf seine physikalische Bedeutung hinweist — nur Codes wie `aa_000`, `ci_000`, `bx_000`. Die Analyse musste rein datenbasiert laufen.
 
 ---
 
@@ -58,8 +69,6 @@ Auf Basis der EDA wurde eine vollständige sklearn-Pipeline aufgebaut, die alle 
 - Ausreißerbehandlung (IQR)
 - Median-Imputation fehlender Werte
 - Standardisierung
-
-- Pipeline für automatische Bereinigung der Daten.
 
 ---
 
@@ -105,7 +114,7 @@ Zum Vergleich: Der Random Forest hätte bei 58 % Recall rund 84 Defekte überseh
 scania-predictive-maintenance/
 ├── issaoui_mL.ipynb          # vollständige Analyse mit allen Plots
 ├── issaoui_mL.pdf            # Notebook als PDF
-├── scania_praesentation_final.pptx  # Projektpräsentation
+├── scania_praesentation.pdf         # Projektpräsentation
 ├── scania_aps_model_gnb.pkl  # trainiertes Modell
 ├── scania_aps_pipeline.pkl   # Preprocessing-Pipeline
 ├── images/                   # Plots aus der Analyse
@@ -145,12 +154,7 @@ IDA Industrial Challenge 2016
 
 ## Autor
 
-
 **Atef Issaoui**  
 Metallograph & Werkstoffanalytiker · Maschinenbau-Student (HS Rhein-Main)  
 Zertifizierter Datenanalyst (Python)  
 issaouiatef@gmail.com · [github.com/ateeef](https://github.com/ateeef)
-
----
-
-> *Die Projektarbeit wurde entsprechend der Kursanforderungen konzipiert und rein datenbasiert durchgeführt — ohne Domänenwissen über die einzelnen Sensoren, da alle 170 Attribute anonymisiert sind.*
