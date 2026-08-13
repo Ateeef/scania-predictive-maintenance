@@ -114,7 +114,7 @@ Zum Vergleich: Der Random Forest hätte bei 58 % Recall rund 84 Defekte überseh
 scania-predictive-maintenance/
 ├── issaoui_mL.ipynb          # vollständige Analyse mit allen Plots
 ├── issaoui_mL.pdf            # Notebook als PDF
-├── scania_praesentation.pdf         # Projektpräsentation
+├── Predictive Maintenance_ML.pptx         # Projektpräsentation
 ├── scania_aps_model_gnb.pkl  # trainiertes Modell
 ├── scania_aps_pipeline.pkl   # Preprocessing-Pipeline
 ├── images/                   # Plots aus der Analyse
