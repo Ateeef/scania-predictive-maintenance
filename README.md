@@ -13,7 +13,7 @@ Das Air Pressure System (APS) erzeugt Druckluft für Bremsen und Getriebe schwer
 
 Die Frage: Lässt sich ein APS-Defekt anhand von Sensordaten vorhersagen, bevor er passiert?
 
-Der Haken dabei: Nicht jeder Fehler wiegt gleich schwer.
+Das problem dabei: Nicht jeder Fehler wiegt gleich schwer.
 
 - Ein Fehlalarm (intakter LKW wird zur Werkstatt geschickt): **10 €**
 - Ein übersehener Defekt (defekter LKW fährt weiter): **500 €**
