@@ -145,13 +145,12 @@ IDA Industrial Challenge 2016
 
 ## Autor
 
+
 **Atef Issaoui**  
 Metallograph & Werkstoffanalytiker · Maschinenbau-Student (HS Rhein-Main)  
 Zertifizierter Datenanalyst (Python)  
 issaouiatef@gmail.com · [github.com/ateeef](https://github.com/ateeef)
 
-
 ---
-
 
 > *Die Projektarbeit wurde entsprechend der Kursanforderungen konzipiert und rein datenbasiert durchgeführt — ohne Domänenwissen über die einzelnen Sensoren, da alle 170 Attribute anonymisiert sind.*
