@@ -11,9 +11,7 @@ TH Deggendorf · Bearbeitungszeit: 1 Monat
 
 Das Air Pressure System (APS) erzeugt Druckluft für Bremsen und Getriebe schwerer Scania-LKWs. Fällt es aus, steht der LKW — mitten auf der Autobahn.
 
-Die Frage: Lässt sich ein APS-Defekt anhand von Sensordaten vorhersagen, bevor er passiert?
-
-Das problem dabei: Nicht jeder Fehler wiegt gleich schwer.
+ Nicht jeder Fehler wiegt gleich schwer.
 
 - Ein Fehlalarm (intakter LKW wird zur Werkstatt geschickt): **10 €**
 - Ein übersehener Defekt (defekter LKW fährt weiter): **500 €**
@@ -95,16 +93,13 @@ Naive Bayes: Intakte LKWs zu 87,5 % erkannt — defekte LKWs zu 91 %. Naive Baye
 
 91 % der defekten LKWs wurden im Testdatensatz gefunden. Von 200 defekten LKWs wurden 181 erkannt — nur 19 durchgegangen.
 
-| | Vorhergesagt: neg | Vorhergesagt: pos |
-|---|---|---|
-| **Tatsächlich: neg** | 10.309 | 1.491 |
-| **Tatsächlich: pos** | 19 | 181 |
 
 **181 von 200 Defekten erkannt. Recall: 91 %.**
 
-19 Defekte wurden übersehen (9.500 €). 1.491 Fehlalarme wurden ausgelöst (14.910 €). Gesamtkosten: ~24.410 €.
+19 Defekte wurden übersehen. 
+1.491 Fehlalarme wurden ausgelöst.
 
-Zum Vergleich: Der Random Forest hätte bei 58 % Recall rund 84 Defekte übersehen — das entspricht 42.000 € allein an übersehenen Schäden.
+Zum Vergleich: Der Random Forest hätte bei 58 % Recall rund 84 Defekte übersehen.
 
 ---
 
