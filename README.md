@@ -91,11 +91,8 @@ Naive Bayes: Intakte LKWs zu 87,5 % erkannt — defekte LKWs zu 91 %. Naive Baye
 
 ![Confusion Matrix](images/confusion_matrix_final.png)
 
-91 % der defekten LKWs wurden im Testdatensatz gefunden. Von 200 defekten LKWs wurden 181 erkannt — nur 19 durchgegangen.
-
-
-**181 von 200 Defekten erkannt. Recall: 91 %.**
-
+91 % der defekten LKWs wurden im Testdatensatz gefunden.
+Von 200 defekten LKWs wurden 181 erkannt
 19 Defekte wurden übersehen. 
 1.491 Fehlalarme wurden ausgelöst.
 
